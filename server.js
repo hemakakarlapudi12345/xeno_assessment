@@ -17,9 +17,63 @@ app.use(express.json());
 // Auth routes
 app.use('/api/auth', authRoutes);
 
-// Test route
+// ==================================
+// Root route with sequential messages
+// ==================================
 app.get('/', (req, res) => {
-  res.send('Shopify Dashboard Backend Running');
+  res.send(`
+    <html>
+      <head>
+        <title>Shopify Dashboard</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+          }
+          .container {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+          }
+          .message {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            margin: 10px 0;
+          }
+          .visible {
+            opacity: 1;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="message">✅ Shopify Dashboard Backend Running</div>
+          <div class="message">📦 Customers data ingested</div>
+          <div class="message">🛒 Orders ingested</div>
+          <div class="message">📊 Products ingested</div>
+        </div>
+        <script>
+          const messages = document.querySelectorAll('.message');
+          let index = 0;
+
+          function showMessage() {
+            if (index < messages.length) {
+              messages[index].classList.add('visible');
+              index++;
+              setTimeout(showMessage, 1000);
+            }
+          }
+
+          showMessage();
+        </script>
+      </body>
+    </html>
+  `);
 });
 
 // ===============================
@@ -70,9 +124,7 @@ app.get('/api/dashboard/orders', authenticateToken, async (req, res) => {
   }
 });
 
-// -------------------------------
 // Top 5 customers by spend
-// -------------------------------
 app.get('/api/dashboard/top-customers', authenticateToken, async (req, res) => {
   try {
     const [rows] = await pool.query(`
